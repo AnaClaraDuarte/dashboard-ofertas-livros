@@ -1,14 +1,2 @@
-# Ambiente virtual (cada um cria o seu com: python -m venv .venv)
-.venv/
-venv/
-
-# Arquivos gerados pelo Python
-__pycache__/
-*.pyc
-
-# Favoritos são pessoais: cada um tem os seus, não vão para o GitHub
-favoritos.csv
-
-# Configurações locais
-.vscode/
-.streamlit/secrets.toml
+# Created by venv; see https://docs.python.org/3/library/venv.html
+*
