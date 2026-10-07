@@ -13,7 +13,7 @@ def montar_tabela(livros):
             "Título": livro["titulo"],
             "Categoria": livro["categoria"],
             "Nota": livro["nota"] * "⭐",
-            "Preço": f"£ {livro["preco"]:.2f}",
+            "Preço": f"£ {livro['preco']:.2f}",
             "Faixa": classificar_preco(livro["preco"])
         }
         tabela.append(linha)
@@ -40,12 +40,24 @@ def contar_por_faixa(livros):
 
     return contagem
 
+def buscar_por_titulo(livros, busca):
+    """Devolve uma lista só com os livros cujo título contém o texto buscado.
+    A comparação ignora maiúsculas/minúsculas: "harry" também acha "Harry Potter".
+    Com a busca vazia, todos os livros aparecem.
+    """
+    encontrados = []
+    for livro in livros:
+        if busca.lower() in livro["titulo"].lower():
+            encontrados.append(livro)
+    return encontrados
+ 
+
 
 def main():
     st.set_page_config(page_title="Dashboard de Livros", page_icon="📚", layout="wide")
-    st.title("📚 Dashboard de Livros")
-
+    st.title("📚 Dashboard de Livros")    
     livros = dados.carregar_livros()
+
     tabela = montar_tabela(livros)
 
     col1, col2, col3, col4 = st.columns(4)
@@ -59,11 +71,18 @@ def main():
     col3.metric("Qtd. livros 5 Estrelas", cinco_estrelas)
 
     mais_caro = dados.encontrar_mais_caro(livros)
-    col4.metric("Livro mais caro", f"£{mais_caro["preco"]}")
+    col4.metric("Livro mais caro", f"£{mais_caro['preco']}")
     col4.caption(mais_caro["titulo"])
 
-    st.dataframe(tabela)
-
+    busca = st.text_input("🔎 Buscar pelo título")
+    encontrados = buscar_por_titulo(livros, busca)
+ 
+    # Só a tabela usa os livros encontrados
+    if len(encontrados) == 0:
+        st.warning("Nenhum livro encontrado.")
+    else:
+        st.caption(f"{len(encontrados)} livros encontrados")
+        st.dataframe(montar_tabela(encontrados))
 
 if __name__ == "__main__":
     main()
