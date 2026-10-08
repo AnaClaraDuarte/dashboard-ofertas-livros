@@ -50,8 +50,28 @@ def buscar_por_titulo(livros, busca):
         if busca.lower() in livro["titulo"].lower():
             encontrados.append(livro)
     return encontrados
- 
 
+def listar_categorias(livros):
+    """Devolve uma lista com todas as categorias únicas dos livros."""
+    categorias = []
+    for livro in livros:
+        if livro["categoria"] not in categorias:
+            categorias.append(livro["categoria"])
+    categorias.sort()
+    return list(categorias)
+
+def filtrar_por_categoria(livros, categoria):
+    """Devolve uma lista só com os livros que pertencem à categoria especificada.
+    Com a categoria vazia, todos os livros aparecem.
+    """
+    if categoria == "Todas":
+        return livros
+    
+    resultado = []
+    for livro in livros:
+        if livro["categoria"] == categoria:
+            resultado.append(livro)
+    return resultado
 
 def main():
     st.set_page_config(page_title="Dashboard de Livros", page_icon="📚", layout="wide")
@@ -74,9 +94,16 @@ def main():
     col4.metric("Livro mais caro", f"£{mais_caro['preco']}")
     col4.caption(mais_caro["titulo"])
 
+    col_busca, col_categoria = st.columns(2)
+
     busca = st.text_input("🔎 Buscar pelo título")
-    encontrados = buscar_por_titulo(livros, busca)
+    categoria = st.selectbox("Filtrar por categoria", ["Todas"] + listar_categorias(livros))
+
+    encontrados = filtrar_por_categoria(livros, categoria)
+    encontrados = buscar_por_titulo(encontrados, busca)
  
+    qtd_livros = len(encontrados)
+
     # Só a tabela usa os livros encontrados
     if len(encontrados) == 0:
         st.warning("Nenhum livro encontrado.")
@@ -85,4 +112,6 @@ def main():
         st.dataframe(montar_tabela(encontrados))
 
 if __name__ == "__main__":
-    main()
+     main()
+
+    
